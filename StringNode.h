@@ -10,5 +10,8 @@ class StringNode: public TreeNode {
 
 
     public:
-        StringNode(std::string);
+        StringNode(TreeNode*, std::string);
+
+        // temporary function for testing; to remove later
+        void testPrint(int = 0) const;
 };

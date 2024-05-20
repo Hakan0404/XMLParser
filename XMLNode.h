@@ -19,14 +19,26 @@ class XMLNode: public TreeNode {
         std::vector<TreeNode*> children;
         std::vector<XMLAttribute> attributes;
 
+        static XMLNode* constructNode(XMLNode*, std::string&, int*);
 
     public:
-        // parent and name
-        XMLNode(TreeNode*, std::string);
+        // parent + name and attributes string
+        XMLNode(XMLNode*, std::string);
         
         void addChild(TreeNode*);
         
-        void addAttribute(XMLAttribute);
+        void addAttribute(std::string, std::string);
         void setAttribute(std::string, std::string);
         void setAttribute(int, std::string);
+
+        std::string getName() const;
+
+        // temporary function for testing; to remove later
+        void testPrint(int = 0) const;
+
+        // UNSAFE; remove later
+        std::vector<TreeNode*> getChildren() const;
+
+        // the string to construct from and the node's parent
+        static XMLNode* constructTree(std::string&);
 };
