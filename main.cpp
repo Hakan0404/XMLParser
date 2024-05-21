@@ -51,11 +51,15 @@ int main() {
     //emptyString.clear();
     //std::cout << emptyString.empty() << std::endl;
 
+    
     XMLNode* tree = XMLNode::constructTree(fileText);
     std::cout << "Printing of constructed tree:" << std::endl;
     tree->testPrint(0);
     std::cout << "\n\n";
+    
 
-    std::cout << "end of main reached" << std::endl;
+    std::string endString = "end of main reached";
+    std::cout << endString << std::endl;
+    //std::cout << endString.substr(0, endString.length() - 1);
     return 0;
 }

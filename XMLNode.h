@@ -41,4 +41,6 @@ class XMLNode: public TreeNode {
 
         // the string to construct from and the node's parent
         static XMLNode* constructTree(std::string&);
+
+        std::string getNodeType() const;
 };

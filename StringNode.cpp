@@ -8,3 +8,7 @@ void StringNode::testPrint(int indentationLevel) const {
     for (int i = 0; i < indentationLevel; i++) std::cout << '\t';
     std::cout << text << std::endl;
 }
+
+std::string StringNode::getNodeType() const {
+    return "StringNode";
+}

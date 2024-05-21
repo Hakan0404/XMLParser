@@ -1,5 +1,6 @@
 #include "XMLNode.h"
 #include "StringNode.h"
+#include "SingleTagNode.h"
 
 XMLNode::XMLAttribute::XMLAttribute(std::string _key, std::string _value): key(_key), value(_value) {
 
@@ -72,6 +73,7 @@ XMLNode* XMLNode::constructNode(XMLNode* parent, std::string& fileString, int* f
     if (!((fileString[*fileStringIndex] >= 'A' && fileString[*fileStringIndex] <= 'Z') || 
           (fileString[*fileStringIndex] >= 'a' && fileString[*fileStringIndex] <= 'z'))) {
             
+        std::cout << fileString[*fileStringIndex] << std::endl;
         throw std::invalid_argument("Improper formatting. Node name must begin with a letter.");
     }
 
@@ -103,7 +105,36 @@ XMLNode* XMLNode::constructNode(XMLNode* parent, std::string& fileString, int* f
                 currentString.clear();
             }
 
-            // checks whether the hit tag is a closing tag
+
+            int startOfTagIndex = *fileStringIndex; // remembers the start of the current tag
+            (*fileStringIndex)++; // moves the file string index onto the first character of the tag
+            std::string tagString;
+            // reads the tag's contents into the string
+            while (fileString[*fileStringIndex] != '>') {
+                tagString = tagString + fileString[*fileStringIndex];
+                (*fileStringIndex)++;
+            }
+            (*fileStringIndex)++; // moves the file string index onto the character after the '>' of the tag
+
+            // Debugging
+            //std::cout << tagString << std::endl;
+
+            if (tagString[0] == '/') { // if the first character of the closing tag is a '/', then the closing tag has been hit
+                if (currentNode->getName() != tagString.substr(1)) throw std::invalid_argument("Improper formatting. Closing tag must match opening tag.");
+                break;
+            }
+            else if (tagString[tagString.length() - 1] == '/') { // if the last character of the closing tag is a '/', then a SingleTagNode has been hit
+                std::string singleTagName = tagString;
+                singleTagName.pop_back();
+                currentNode->addChild(new SingleTagNode(currentNode, singleTagName));
+            }
+            else { // a new nested node has been hit
+                (*fileStringIndex) = startOfTagIndex;
+                XMLNode* newChild = constructNode(currentNode, fileString, fileStringIndex);
+                currentNode->addChild(newChild);
+            }
+
+            /* Old code; TO REMOVE
             if (fileString[*fileStringIndex + 1] == '/') {
                 (*fileStringIndex) += 2; // move the file string index into the closing tag
                 std::string closingTagName;
@@ -121,12 +152,13 @@ XMLNode* XMLNode::constructNode(XMLNode* parent, std::string& fileString, int* f
                 XMLNode* newChild = constructNode(currentNode, fileString, fileStringIndex);
                 currentNode->addChild(newChild);
             }
+            */
         }
     }
 
     return currentNode;
     
-    /*
+    /* Old code; TO REMOVE
     while (true) {
         char currentChar = fileString[*fileStringIndex];
 
@@ -151,4 +183,8 @@ XMLNode* XMLNode::constructTree(std::string& fileString) {
     int* fileStringIndex = new int(0);
     XMLNode* root = constructNode(nullptr, fileString, fileStringIndex);
     return root;
+}
+
+std::string XMLNode::getNodeType() const {
+    return "XMLNode";
 }

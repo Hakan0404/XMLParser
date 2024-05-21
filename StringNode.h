@@ -14,4 +14,6 @@ class StringNode: public TreeNode {
 
         // temporary function for testing; to remove later
         void testPrint(int = 0) const;
+        
+        std::string getNodeType() const;
 };
