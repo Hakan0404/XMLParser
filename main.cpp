@@ -6,6 +6,7 @@
 
 int main() {
     
+    /*
     std::ifstream inputStream("testxml.txt");
 
     std::string fileText;
@@ -28,7 +29,7 @@ int main() {
     fileText = "<root>" + fileText + "</root>";
     std::cout << "Printing of modified file string:" << std::endl;
     std::cout << fileText << "\n\n";
-    
+    */
 
     //int* stringIndex = new int(69);
     //std::cout << *stringIndex << std::endl;
@@ -51,8 +52,7 @@ int main() {
     //emptyString.clear();
     //std::cout << emptyString.empty() << std::endl;
 
-    
-    XMLNode* tree = XMLNode::constructTree(fileText);
+    XMLNode* tree = XMLNode::constructTree("testxml.txt");
     std::cout << "Printing of constructed tree:" << std::endl;
     tree->testPrint(0);
     std::cout << "\n\n";

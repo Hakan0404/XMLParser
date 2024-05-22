@@ -19,7 +19,10 @@ class XMLNode: public TreeNode {
         std::vector<TreeNode*> children;
         std::vector<XMLAttribute> attributes;
 
+        static std::string convertFileToString(const std::string);
+
         static XMLNode* constructNode(XMLNode*, std::string&, int*);
+
 
     public:
         // parent + name and attributes string
@@ -40,7 +43,7 @@ class XMLNode: public TreeNode {
         std::vector<TreeNode*> getChildren() const;
 
         // the string to construct from and the node's parent
-        static XMLNode* constructTree(std::string&);
+        static XMLNode* constructTree(const std::string&);
 
         std::string getNodeType() const;
 };

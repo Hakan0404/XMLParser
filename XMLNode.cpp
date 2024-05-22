@@ -2,9 +2,12 @@
 #include "StringNode.h"
 #include "SingleTagNode.h"
 
+#include <fstream>
+
 XMLNode::XMLAttribute::XMLAttribute(std::string _key, std::string _value): key(_key), value(_value) {
 
 }
+
 
 XMLNode::XMLNode(XMLNode* _parent, std::string nameAttributeString): TreeNode(_parent) {
     std::vector<std::string> substrings;
@@ -32,14 +35,17 @@ XMLNode::XMLNode(XMLNode* _parent, std::string nameAttributeString): TreeNode(_p
     }
 }
 
+
 // UNSAFE; simply adds the pointer, not a copy of the object at the pointer
 void XMLNode::addChild(TreeNode* newChild) {
     this->children.push_back(newChild);
 } 
 
+
 std::string XMLNode::getName() const {
     return name;
 }
+
 
 void XMLNode::testPrint(int indentationLevel) const {
     for (int i = 0; i < indentationLevel; i++) std::cout << '\t'; //prints indentiation before opening tag
@@ -62,9 +68,36 @@ void XMLNode::testPrint(int indentationLevel) const {
     std::cout << "</" << name << ">\n";
 }
 
+
 std::vector<TreeNode*> XMLNode::getChildren() const {
     return children;
 }
+
+
+std::string XMLNode::convertFileToString(const std::string filePath) {
+    std::ifstream inputStream(filePath);
+
+    std::string fileText;
+    std::string current;
+
+    // reads all of the file's contents into the fileText string, while removing the new lines
+    while (!inputStream.eof()) {
+        getline(inputStream, current);
+        fileText = fileText + current;
+    }
+
+    // removes all indentation from the file string
+    while (fileText.contains("\t")) {
+        int tabIndex = fileText.find("\t");
+        fileText.erase(tabIndex, 1);
+    }
+
+    // add the encompassing root node
+    fileText = "<root>" + fileText + "</root>";
+
+    return fileText;
+}
+
 
 XMLNode* XMLNode::constructNode(XMLNode* parent, std::string& fileString, int* fileStringIndex) {
     // move the file string index past the initial '<'
@@ -179,9 +212,12 @@ XMLNode* XMLNode::constructNode(XMLNode* parent, std::string& fileString, int* f
     */
 }
 
-XMLNode* XMLNode::constructTree(std::string& fileString) {
+XMLNode* XMLNode::constructTree(const std::string& filePath) {
+    std::string fileString = convertFileToString(filePath);
     int* fileStringIndex = new int(0);
+    
     XMLNode* root = constructNode(nullptr, fileString, fileStringIndex);
+    
     return root;
 }
 
