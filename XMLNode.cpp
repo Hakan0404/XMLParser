@@ -36,10 +36,116 @@ XMLNode::XMLNode(XMLNode* _parent, std::string nameAttributeString): TreeNode(_p
 }
 
 
+// creates a list containing the XMLNode it is called on and all its descendant XMLNodes 
+void XMLNode::getXMLNodes(std::vector<XMLNode*>& xmlNodeList) {
+    xmlNodeList.push_back(this);
+    for (int i = 0; i < this->children.size(); i++) {
+        if (this->children[i]->getNodeType() == "XMLNode") {
+            dynamic_cast<XMLNode*>(children[i])->getXMLNodes(xmlNodeList);
+        }
+    }
+}
+
+
+// Iterates through "this" node and all its descendant XML nodes and gives each one a unique "id" attribute
+void XMLNode::setUniqueIds() {
+    std::vector<XMLNode*> xmlNodeList;
+    this->getXMLNodes(xmlNodeList);
+
+    // generates new ids for nodes without the "id" attribute
+    int idCounter = 0;
+    for (int i = 0; i < xmlNodeList.size(); i++) {
+        if (!(xmlNodeList[i]->hasAttribute("id"))) {
+            xmlNodeList[i]->addAttribute("id", std::to_string(idCounter));
+            idCounter++;
+        }
+    }
+
+    // finds and fixes cases of duplicate ids
+    for (int i = 0; i < xmlNodeList.size(); i++) {
+        if (xmlNodeList[i]->hasAttribute("id")) {
+            std::string currentIdValue = (xmlNodeList[i]->getAttribute("id")).value;
+            int duplicatesCounter = 1; // counts the id of the first node too
+
+            for (int j = 0; j < xmlNodeList.size(); j++) {
+                if (j != i) { // so that we don't count the original node as a duplicate of itself
+                    if (xmlNodeList[j]->hasAttribute("id", currentIdValue)) { // a node with the same value for the "id" attribute has been found
+                        duplicatesCounter++;
+                        std::string newIdValue = (xmlNodeList[j]->getAttribute("id")).value + "_" + std::to_string(duplicatesCounter);
+                        xmlNodeList[j]->setAttribute("id", newIdValue);
+                    }
+                }
+            }
+
+            if (duplicatesCounter > 1) { // if nodes with duplicate "id" attributes have been hit, then change the value of the original node
+                xmlNodeList[i]->setAttribute("id", currentIdValue + "_1");
+            }
+        }
+    }
+}
+
+
 // UNSAFE; simply adds the pointer, not a copy of the object at the pointer
 void XMLNode::addChild(TreeNode* newChild) {
     this->children.push_back(newChild);
 } 
+
+
+void XMLNode::addAttribute(std::string attributeName, std::string attributeValue) {
+    attributes.push_back(XMLAttribute(attributeName, attributeValue));
+}
+
+
+void XMLNode::setAttribute(std::string attributeName, std::string newAttributeValue) {
+    if (!(this->hasAttribute(attributeName))) {
+        std::string errorMessage = "No attribute with name " + attributeName + " found within node with name " + this->name + ".";
+        throw std::invalid_argument(errorMessage);
+    }
+
+    for (int i = 0; i < attributes.size(); i++) {
+        if (attributes[i].key == attributeName) {
+            attributes[i].value = newAttributeValue;
+            break;
+        }
+    }
+}
+
+
+XMLNode::XMLAttribute XMLNode::getAttribute(std::string attributeName) const {
+    for (int i = 0; i < attributes.size(); i++) {
+        if (attributes[i].key == attributeName) return attributes[i];
+    }
+
+    std::string errorMessage = "No attribute with name " + attributeName + " found within node with name " + this->name + ".";
+    throw std::invalid_argument(errorMessage);
+}
+
+
+XMLNode::XMLAttribute XMLNode::getAttribute(int attributeIndex) const {
+    if (attributeIndex >= attributes.size()) {
+        std::string errorMessage = "Attribute index " + std::to_string(attributeIndex) + " for node with name " + this->name + " is out of bounds.";
+        throw std::invalid_argument(errorMessage);
+    }
+    return attributes[attributeIndex];
+}
+
+
+bool XMLNode::hasAttribute(std::string attributeName) const {
+    for (int i = 0; i < attributes.size(); i++) {
+        if (attributes[i].key == attributeName) return true;
+    }
+
+    return false;
+}
+
+
+bool XMLNode::hasAttribute(std::string attributeName, std::string attributeValue) const {
+    for (int i = 0; i < attributes.size(); i++) {
+        if (attributes[i].key == attributeName && attributes[i].value == attributeValue) return true;
+    }
+
+    return false;
+}
 
 
 std::string XMLNode::getName() const {
@@ -117,7 +223,6 @@ XMLNode* XMLNode::constructNode(XMLNode* parent, std::string& fileString, int* f
         (*fileStringIndex)++;
     }
     XMLNode* currentNode = new XMLNode(parent, nodeConstructorString);
-    //if (parent != nullptr) parent->addChild(currentNode); // TO REMOVE
 
     // Debugging
     //std::cout << "Running for: " << currentNode->getName() << std::endl;
@@ -166,50 +271,10 @@ XMLNode* XMLNode::constructNode(XMLNode* parent, std::string& fileString, int* f
                 XMLNode* newChild = constructNode(currentNode, fileString, fileStringIndex);
                 currentNode->addChild(newChild);
             }
-
-            /* Old code; TO REMOVE
-            if (fileString[*fileStringIndex + 1] == '/') {
-                (*fileStringIndex) += 2; // move the file string index into the closing tag
-                std::string closingTagName;
-                
-                while (fileString[*fileStringIndex] != '>') {
-                    closingTagName = closingTagName + fileString[*fileStringIndex];
-                    (*fileStringIndex)++;
-                }
-                
-                (*fileStringIndex)++; // move the string index past the '>' of the closing tag
-                if (currentNode->getName() != closingTagName) throw std::invalid_argument("Improper formatting. Closing tag must match opening tag.");
-                break;
-            }
-            else { // if the hit tag is not a closing one, a new nested node has been hit
-                XMLNode* newChild = constructNode(currentNode, fileString, fileStringIndex);
-                currentNode->addChild(newChild);
-            }
-            */
         }
     }
 
     return currentNode;
-    
-    /* Old code; TO REMOVE
-    while (true) {
-        char currentChar = fileString[*fileStringIndex];
-
-        if (currentChar != '<') {
-            std::string textOfStringNode;
-        
-            while (fileString[*fileStringIndex] != '<') {
-                textOfStringNode = textOfStringNode + fileString[*fileStringIndex];
-                *fileStringIndex += 1;
-            }
-
-        
-        }
-        else {
-
-        } 
-    }
-    */
 }
 
 XMLNode* XMLNode::constructTree(const std::string& filePath) {
@@ -217,6 +282,9 @@ XMLNode* XMLNode::constructTree(const std::string& filePath) {
     int* fileStringIndex = new int(0);
     
     XMLNode* root = constructNode(nullptr, fileString, fileStringIndex);
+    delete fileStringIndex;
+
+    root->setUniqueIds();
     
     return root;
 }

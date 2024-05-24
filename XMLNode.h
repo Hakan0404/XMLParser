@@ -23,6 +23,10 @@ class XMLNode: public TreeNode {
 
         static XMLNode* constructNode(XMLNode*, std::string&, int*);
 
+        void getXMLNodes(std::vector<XMLNode*>&);
+
+        void setUniqueIds();
+
 
     public:
         // parent + name and attributes string
@@ -33,6 +37,11 @@ class XMLNode: public TreeNode {
         void addAttribute(std::string, std::string);
         void setAttribute(std::string, std::string);
         void setAttribute(int, std::string);
+        XMLAttribute getAttribute(std::string) const;
+        XMLAttribute getAttribute(int) const;
+
+        bool hasAttribute(std::string) const;
+        bool hasAttribute(std::string, std::string) const;
 
         std::string getName() const;
 
