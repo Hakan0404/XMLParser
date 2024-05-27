@@ -257,17 +257,17 @@ XMLNode* XMLNode::constructNode(XMLNode* parent, std::string& fileString, int* f
             // Debugging
             //std::cout << tagString << std::endl;
 
-            if (tagString[0] == '/') { // if the first character of the closing tag is a '/', then the closing tag has been hit
+            if (tagString[0] == '/') { // if the first character of the tag is a '/', then the closing tag has been hit
                 if (currentNode->getName() != tagString.substr(1)) throw std::invalid_argument("Improper formatting. Closing tag must match opening tag.");
                 break;
             }
-            else if (tagString[tagString.length() - 1] == '/') { // if the last character of the closing tag is a '/', then a SingleTagNode has been hit
+            else if (tagString[tagString.length() - 1] == '/') { // if the last character of the tag is a '/', then a SingleTagNode has been hit
                 std::string singleTagName = tagString;
                 singleTagName.pop_back();
                 currentNode->addChild(new SingleTagNode(currentNode, singleTagName));
             }
             else { // a new nested node has been hit
-                (*fileStringIndex) = startOfTagIndex;
+                (*fileStringIndex) = startOfTagIndex; // moves the file string index back to the start of the tag (since the recursive call is expecting to read it itself)
                 XMLNode* newChild = constructNode(currentNode, fileString, fileStringIndex);
                 currentNode->addChild(newChild);
             }

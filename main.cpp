@@ -1,5 +1,6 @@
 #include "XMLNode.h"
 #include "StringNode.h"
+#include "XPathParser.h"
 #include <iostream>
 #include <fstream>
 
@@ -30,7 +31,11 @@ int main() {
     std::cout << "Printing of constructed tree:" << std::endl;
     tree->testPrint(0);
     std::cout << "\n\n";
+
+    std::string xPathExpression;
+    std::cin >> xPathExpression;
     
+    XPathParser testParser = XPathParser(tree, xPathExpression);
 
     std::string endString = "end of main reached";
     std::cout << endString << std::endl;
