@@ -23,8 +23,6 @@ class XMLNode: public TreeNode {
 
         static XMLNode* constructNode(XMLNode*, std::string&, int*);
 
-        void getXMLNodes(std::vector<XMLNode*>&);
-
         void setUniqueIds();
 
 
@@ -50,6 +48,9 @@ class XMLNode: public TreeNode {
 
         // UNSAFE; remove later
         std::vector<TreeNode*> getChildren() const;
+
+        // UNSAFE
+        void getXMLNodes(std::vector<XMLNode*>&);
 
         // the string to construct from and the node's parent
         static XMLNode* constructTree(const std::string&);

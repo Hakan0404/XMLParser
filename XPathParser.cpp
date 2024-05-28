@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <functional>
+#include <algorithm>
 
 XPathParser::XPathParser(XMLNode* _xmlTree, std::string expressionString) {
     xmlTree = _xmlTree; // TO REPLACE with xmlTree = _xmlTree->clone();
@@ -60,12 +61,49 @@ XPathParser::XPathParser(XMLNode* _xmlTree, std::string expressionString) {
 }
 
 
-/*
-class SelectionCommand {
-    public:
-        virtual void execute(std::vector<XMLNode*> contextNodes) = 0;
+std::function<std::vector<XMLNode*>(std::vector<XMLNode*>)> XPathParser::createSelectionCommand(std::string stringCommand) {
+    if (stringCommand == "/") {
+        return [](std::vector<XMLNode*> inputList)->std::vector<XMLNode*> {
+            std::vector<XMLNode*> outputList;
+            
+            for (int i = 0; i < inputList.size(); i++) {
+                std::vector<TreeNode*> currentChildNodes = inputList[i]->getChildren();
+                
+                for (int j = 0; j < currentChildNodes.size(); j++) {
+                    if (currentChildNodes[j]->getNodeType() == "XMLNode") {
+                        outputList.push_back(dynamic_cast<XMLNode*>(currentChildNodes[j]));
+                    }
+                }
+            }
+
+            return outputList;
+        };
+    }
+
+    if (stringCommand == "//") {
+        return [](std::vector<XMLNode*> inputList)->std::vector<XMLNode*> {
+            std::vector<XMLNode*> outputList;
+
+            for (int i = 0; i < inputList.size(); i++) {
+                std::vector<XMLNode*> currentDescendantNodes;
+                inputList[i]->getXMLNodes(currentDescendantNodes);
+                currentDescendantNodes.erase(currentDescendantNodes.begin() + 0); // getXMLNodes returns a list containing the node calling the method itself and all its descendant XMLNode-s; we only want the descendant nodes here
+
+                for (int j = 0; j < currentDescendantNodes.size(); j++) {
+                    if (std::find(outputList.begin(), outputList.end(), currentDescendantNodes[j]) == outputList.end()) { // check that outputList doesn't already contain the node to be added to it
+                        outputList.push_back(currentDescendantNodes[j]); 
+                    }
+                }
+            }
+
+            return outputList;
+        };
+    }
+
+    if (stringCommand[0] == '[') {
+        if (stringCommand[stringCommand.length() - 1] != ']') throw std::invalid_argument("Malformed XPath predicate.");
+
+        stringCommand.erase(0, 1); // removes the opening '[' from the command
+        stringCommand.erase(stringCommand.length() - 1, 1); // removes the closing ']' from the command
+    }
 }
-class SelectChildren: public SelectionCommand {
-    
-}
-*/

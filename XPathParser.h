@@ -3,6 +3,7 @@
 #include "XMLNode.h"
 #include <string>
 #include <vector>
+#include <functional>
 
 class XPathParser {
     private:
@@ -13,4 +14,8 @@ class XPathParser {
 
     public:
         XPathParser(XMLNode*, std::string);
+
+
+    private:
+        std::function<std::vector<XMLNode*>(std::vector<XMLNode*>)> createSelectionCommand(std::string);
 };

@@ -3,6 +3,7 @@
 #include "XPathParser.h"
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 
 
 int main() {
@@ -36,6 +37,15 @@ int main() {
     std::cin >> xPathExpression;
     
     XPathParser testParser = XPathParser(tree, xPathExpression);
+
+    std::vector<int> intVector = {1,2,3,4,5};
+    /*intVector.erase(intVector.begin() + 2);
+    for (int i = 0; i < intVector.size(); i++) {
+        std::cout << intVector[i] << " ";
+    }
+    std::cout << std::endl;*/
+
+    std::cout << "Vector find: " << (std::find(intVector.begin(), intVector.end(), 3) != intVector.end()) << std::endl;
 
     std::string endString = "end of main reached";
     std::cout << endString << std::endl;
