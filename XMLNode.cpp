@@ -48,10 +48,11 @@ void XMLNode::getXMLNodes(std::vector<XMLNode*>& xmlNodeList) {
 
 
 // Iterates through "this" node and all its descendant XML nodes and gives each one a unique "id" attribute
-/*
+
 void XMLNode::setUniqueIds() {
     std::vector<XMLNode*> xmlNodeList;
     this->getXMLNodes(xmlNodeList);
+
 
     // generates new ids for nodes without the "id" attribute
     int idCounter = 0;
@@ -62,29 +63,49 @@ void XMLNode::setUniqueIds() {
         }
     }
 
-    // finds and fixes cases of duplicate ids
-    for (int i = 0; i < xmlNodeList.size(); i++) {
-        if (xmlNodeList[i]->hasAttribute("id")) {
-            std::string currentIdValue = (xmlNodeList[i]->getAttribute("id")).value;
-            int duplicatesCounter = 1; // counts the id of the first node too
 
-            for (int j = 0; j < xmlNodeList.size(); j++) {
-                if (j != i) { // so that we don't count the original node as a duplicate of itself
-                    if (xmlNodeList[j]->hasAttribute("id", currentIdValue)) { // a node with the same value for the "id" attribute has been found
-                        duplicatesCounter++;
-                        std::string newIdValue = (xmlNodeList[j]->getAttribute("id")).value + "_" + std::to_string(duplicatesCounter);
-                        xmlNodeList[j]->setAttribute("id", newIdValue);
+    // finds and fixes cases of duplicate ids
+    bool duplicateIdsFound = true;
+    do {
+        // find and correct duplicates
+        for (int i = 0; i < xmlNodeList.size(); i++) {
+            if (xmlNodeList[i]->hasAttribute("id")) {
+                std::string currentIdValue = (xmlNodeList[i]->getAttribute("id"))->getValue();
+                int duplicatesCounter = 0;
+
+                for (int j = 0; j < xmlNodeList.size(); j++) {
+                    if (j != i) { // so that we don't count the original node as a duplicate of itself
+                        if (xmlNodeList[j]->hasAttribute("id", currentIdValue)) { // a node with the same value for the "id" attribute has been found
+                            duplicatesCounter++;
+                            std::string newIdValue = (xmlNodeList[j]->getAttribute("id"))->getValue() + "_" + std::to_string(duplicatesCounter);
+                            xmlNodeList[j]->setAttribute("id", newIdValue);
+                        }
+                    }
+                }
+
+                if (duplicatesCounter > 0) { // if nodes with duplicate "id" attributes have been hit, then change the value of the original node
+                    xmlNodeList[i]->setAttribute("id", currentIdValue + "_0");
+                }
+            }
+        }
+
+        
+        // check if any duplicates remain after correction
+        duplicateIdsFound = false;
+        for (int i = 0; i < xmlNodeList.size(); i++) {
+            if (xmlNodeList[i]->hasAttribute("id")) {
+                std::string currentIdValue = (xmlNodeList[i]->getAttribute("id"))->getValue();
+
+                for (int j = 0; j < xmlNodeList.size(); j++) {
+                    if (j != i) {
+                        if (xmlNodeList[j]->hasAttribute("id", currentIdValue)) duplicateIdsFound = true;
                     }
                 }
             }
-
-            if (duplicatesCounter > 1) { // if nodes with duplicate "id" attributes have been hit, then change the value of the original node
-                xmlNodeList[i]->setAttribute("id", currentIdValue + "_1");
-            }
         }
-    }
+    } while (duplicateIdsFound);
 }
-*/
+
 
 // UNSAFE; simply adds the pointer, not a copy of the object at the pointer
 void XMLNode::addChild(TreeNode* newChild) {
@@ -285,7 +306,7 @@ XMLNode* XMLNode::constructTree(const std::string& filePath) {
     XMLNode* root = constructNode(nullptr, fileString, fileStringIndex);
     delete fileStringIndex;
 
-    //root->setUniqueIds();
+    root->setUniqueIds();
     
     return root;
 }

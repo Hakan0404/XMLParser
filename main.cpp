@@ -33,10 +33,10 @@ int main() {
     tree->testPrint(0);
     std::cout << "\n\n";
 
-    std::string xPathExpression;
-    std::cin >> xPathExpression;
+    //std::string xPathExpression;
+    //std::cin >> xPathExpression;
     
-    XPathParser testParser = XPathParser(tree, xPathExpression);
+    //XPathParser testParser = XPathParser(tree, xPathExpression);
 
     std::vector<int> intVector = {1,2,3,4,5};
     /*intVector.erase(intVector.begin() + 2);
