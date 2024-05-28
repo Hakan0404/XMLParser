@@ -1,13 +1,13 @@
 #include "XMLNode.h"
 #include "StringNode.h"
 #include "SingleTagNode.h"
+#include "AttributeNode.h"
 
 #include <fstream>
 
-XMLNode::XMLAttribute::XMLAttribute(std::string _key, std::string _value): key(_key), value(_value) {
+/*XMLNode::XMLAttribute::XMLAttribute(std::string _key, std::string _value): key(_key), value(_value) {
 
-}
-
+}*/
 
 XMLNode::XMLNode(XMLNode* _parent, std::string nameAttributeString): TreeNode(_parent) {
     std::vector<std::string> substrings;
@@ -31,7 +31,7 @@ XMLNode::XMLNode(XMLNode* _parent, std::string nameAttributeString): TreeNode(_p
         int equalityIndex = substrings[i].find('=');
         currentAttributeName = substrings[i].substr(0, equalityIndex);
         currentAttributeValue = substrings[i].substr(equalityIndex + 2, substrings[i].length() - equalityIndex - 3);
-        this->attributes.push_back(XMLAttribute(currentAttributeName, currentAttributeValue));
+        this->attributes.push_back(new AttributeNode(this, currentAttributeName, currentAttributeValue));
     }
 }
 
@@ -48,6 +48,7 @@ void XMLNode::getXMLNodes(std::vector<XMLNode*>& xmlNodeList) {
 
 
 // Iterates through "this" node and all its descendant XML nodes and gives each one a unique "id" attribute
+/*
 void XMLNode::setUniqueIds() {
     std::vector<XMLNode*> xmlNodeList;
     this->getXMLNodes(xmlNodeList);
@@ -83,7 +84,7 @@ void XMLNode::setUniqueIds() {
         }
     }
 }
-
+*/
 
 // UNSAFE; simply adds the pointer, not a copy of the object at the pointer
 void XMLNode::addChild(TreeNode* newChild) {
@@ -92,7 +93,7 @@ void XMLNode::addChild(TreeNode* newChild) {
 
 
 void XMLNode::addAttribute(std::string attributeName, std::string attributeValue) {
-    attributes.push_back(XMLAttribute(attributeName, attributeValue));
+    attributes.push_back(new AttributeNode(this, attributeName, attributeValue));
 }
 
 
@@ -103,17 +104,17 @@ void XMLNode::setAttribute(std::string attributeName, std::string newAttributeVa
     }
 
     for (int i = 0; i < attributes.size(); i++) {
-        if (attributes[i].key == attributeName) {
-            attributes[i].value = newAttributeValue;
+        if (attributes[i]->getKey() == attributeName) {
+            attributes[i]->setValue(newAttributeValue);
             break;
         }
     }
 }
 
 
-XMLNode::XMLAttribute XMLNode::getAttribute(std::string attributeName) const {
+AttributeNode* XMLNode::getAttribute(std::string attributeName) const {
     for (int i = 0; i < attributes.size(); i++) {
-        if (attributes[i].key == attributeName) return attributes[i];
+        if (attributes[i]->getKey() == attributeName) return attributes[i];
     }
 
     std::string errorMessage = "No attribute with name " + attributeName + " found within node with name " + this->name + ".";
@@ -121,7 +122,7 @@ XMLNode::XMLAttribute XMLNode::getAttribute(std::string attributeName) const {
 }
 
 
-XMLNode::XMLAttribute XMLNode::getAttribute(int attributeIndex) const {
+AttributeNode* XMLNode::getAttribute(int attributeIndex) const {
     if (attributeIndex >= attributes.size()) {
         std::string errorMessage = "Attribute index " + std::to_string(attributeIndex) + " for node with name " + this->name + " is out of bounds.";
         throw std::invalid_argument(errorMessage);
@@ -132,7 +133,7 @@ XMLNode::XMLAttribute XMLNode::getAttribute(int attributeIndex) const {
 
 bool XMLNode::hasAttribute(std::string attributeName) const {
     for (int i = 0; i < attributes.size(); i++) {
-        if (attributes[i].key == attributeName) return true;
+        if (attributes[i]->getKey() == attributeName) return true;
     }
 
     return false;
@@ -141,7 +142,7 @@ bool XMLNode::hasAttribute(std::string attributeName) const {
 
 bool XMLNode::hasAttribute(std::string attributeName, std::string attributeValue) const {
     for (int i = 0; i < attributes.size(); i++) {
-        if (attributes[i].key == attributeName && attributes[i].value == attributeValue) return true;
+        if (attributes[i]->getKey() == attributeName && attributes[i]->getValue() == attributeValue) return true;
     }
 
     return false;
@@ -160,7 +161,7 @@ void XMLNode::testPrint(int indentationLevel) const {
     std::cout << '<' << name;
     //prints attributes
     for (int i = 0; i < attributes.size(); i++) {
-        std::cout << ' ' << attributes[i].key << "=\"" << attributes[i].value << '\"';
+        std::cout << ' ' << attributes[i]->getKey() << "=\"" << attributes[i]->getValue() << '\"';
     }
     std::cout << ">\n";
 
@@ -284,7 +285,7 @@ XMLNode* XMLNode::constructTree(const std::string& filePath) {
     XMLNode* root = constructNode(nullptr, fileString, fileStringIndex);
     delete fileStringIndex;
 
-    root->setUniqueIds();
+    //root->setUniqueIds();
     
     return root;
 }

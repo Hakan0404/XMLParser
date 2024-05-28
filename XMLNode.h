@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TreeNode.h"
+#include "AttributeNode.h"
 #include <iostream>
 #include <vector>
 #include <string>
@@ -8,16 +9,16 @@
 
 class XMLNode: public TreeNode {
     private:
-        struct XMLAttribute {
+        /*struct XMLAttribute {
             std::string key;
             std::string value;
             
             XMLAttribute(std::string, std::string);
-        };
+        };*/
 
         std::string name;
         std::vector<TreeNode*> children;
-        std::vector<XMLAttribute> attributes;
+        std::vector<AttributeNode*> attributes;
 
         static std::string convertFileToString(const std::string);
 
@@ -35,8 +36,8 @@ class XMLNode: public TreeNode {
         void addAttribute(std::string, std::string);
         void setAttribute(std::string, std::string);
         void setAttribute(int, std::string);
-        XMLAttribute getAttribute(std::string) const;
-        XMLAttribute getAttribute(int) const;
+        AttributeNode* getAttribute(std::string) const;
+        AttributeNode* getAttribute(int) const;
 
         bool hasAttribute(std::string) const;
         bool hasAttribute(std::string, std::string) const;
