@@ -37,21 +37,20 @@ XMLNode::XMLNode(XMLNode* _parent, std::string nameAttributeString): TreeNode(_p
 
 
 // creates a list containing the XMLNode it is called on and all its descendant XMLNodes 
-void XMLNode::getXMLNodes(std::vector<XMLNode*>& xmlNodeList) {
+void XMLNode::getXMLDescendants(std::vector<XMLNode*>& xmlNodeList) {
     xmlNodeList.push_back(this);
     for (int i = 0; i < this->children.size(); i++) {
         if (this->children[i]->getNodeType() == "XMLNode") {
-            dynamic_cast<XMLNode*>(children[i])->getXMLNodes(xmlNodeList);
+            dynamic_cast<XMLNode*>(children[i])->getXMLDescendants(xmlNodeList);
         }
     }
 }
 
 
 // Iterates through "this" node and all its descendant XML nodes and gives each one a unique "id" attribute
-
 void XMLNode::setUniqueIds() {
     std::vector<XMLNode*> xmlNodeList;
-    this->getXMLNodes(xmlNodeList);
+    this->getXMLDescendants(xmlNodeList);
 
 
     // generates new ids for nodes without the "id" attribute
@@ -152,6 +151,11 @@ AttributeNode* XMLNode::getAttribute(int attributeIndex) const {
 }
 
 
+std::vector<AttributeNode*> XMLNode::getAllAttributes() {
+    return attributes;
+}
+
+
 bool XMLNode::hasAttribute(std::string attributeName) const {
     for (int i = 0; i < attributes.size(); i++) {
         if (attributes[i]->getKey() == attributeName) return true;
@@ -201,6 +205,21 @@ std::vector<TreeNode*> XMLNode::getChildren() const {
     return children;
 }
 
+std::vector<XMLNode*> XMLNode::getXMLChildren() {
+    std::vector<XMLNode*> result;
+    for (int i = 0; i < children.size(); i++) {
+        if (children[i]->getNodeType() == "XMLNode") result.push_back(dynamic_cast<XMLNode*>(children[i]));
+    }
+    return result;
+}
+
+std::vector<StringNode*> XMLNode::getStringChildren() {
+    std::vector<StringNode*> result;
+    for (int i = 0; i < children.size(); i++) {
+        if (children[i]->getNodeType() == "StringNode") result.push_back(dynamic_cast<StringNode*>(children[i]));
+    }
+    return result;
+}
 
 std::string XMLNode::convertFileToString(const std::string filePath) {
     std::ifstream inputStream(filePath);

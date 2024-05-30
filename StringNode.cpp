@@ -1,7 +1,12 @@
 #include "StringNode.h"
 
+
 StringNode::StringNode(TreeNode* _parent, std::string _text): TreeNode(_parent), text(_text) {
 
+}
+
+std::string StringNode::getText() const {
+    return text;
 }
 
 void StringNode::testPrint(int indentationLevel) const {

@@ -2,6 +2,7 @@
 
 #include "TreeNode.h"
 #include "AttributeNode.h"
+#include "StringNode.h"
 #include <iostream>
 #include <vector>
 #include <string>
@@ -38,6 +39,7 @@ class XMLNode: public TreeNode {
         void setAttribute(int, std::string);
         AttributeNode* getAttribute(std::string) const;
         AttributeNode* getAttribute(int) const;
+        std::vector<AttributeNode*> getAllAttributes();
 
         bool hasAttribute(std::string) const;
         bool hasAttribute(std::string, std::string) const;
@@ -49,9 +51,11 @@ class XMLNode: public TreeNode {
 
         // UNSAFE; remove later
         std::vector<TreeNode*> getChildren() const;
+        std::vector<XMLNode*> getXMLChildren();
+        std::vector<StringNode*> getStringChildren();
 
         // UNSAFE
-        void getXMLNodes(std::vector<XMLNode*>&);
+        void getXMLDescendants(std::vector<XMLNode*>&);
 
         // the string to construct from and the node's parent
         static XMLNode* constructTree(const std::string&);
