@@ -1,0 +1,31 @@
+<person id="1_0_0">
+	personText1
+	<name id="1_0_1">
+		John Smith
+	</name>
+	personText2
+	<address type="home" id="1_1">
+		Brooklyn, NY
+	</address>
+	<address type="work" id="2">
+		Manhattan, NYC
+	</address>
+	<occupation id="3">
+		Dentist
+	</occupation>
+</person>
+<person id="1_2">
+	personText3
+	<name id="4">
+		Ivan Petrov
+	</name>
+	personText4
+	<address id="5">
+		Bulgaria
+	</address>
+	<line-break/>
+	<sometag/>
+	<lol/>
+	<family id="1">
+	</family>
+</person>

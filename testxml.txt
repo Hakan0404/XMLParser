@@ -1,0 +1,6 @@
+<person id="9">
+	lol
+	<newline/>
+	<address id="10">
+	</address>
+</person>

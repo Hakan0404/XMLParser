@@ -293,7 +293,8 @@ void ConsoleInterface::select(XMLNode* tree, std::string nodeId, std::string att
 
     std::string xPathString = "//*[@id=\"" + nodeId + "\"]/@" + attributeKey;
     XPathParser parser = XPathParser(tree, xPathString);
-    parser.execute();
+    std::string resultString = parser.execute();
+    std::cout << resultString << std::endl;
 }
 
 void ConsoleInterface::set(XMLNode* tree, std::string nodeId, std::string attributeKey, std::string newAttributeValue, bool& treeLoaded) {
@@ -350,7 +351,8 @@ void ConsoleInterface::children(XMLNode* tree, std::string nodeId, bool& treeLoa
     
     std::string xPathString = "//*[@id=\"" + nodeId + "\"]/*/@*";
     XPathParser parser = XPathParser(tree, xPathString);
-    parser.execute();
+    std::string resultString = parser.execute();
+    std::cout << resultString << std::endl;
 }
 
 void ConsoleInterface::text(XMLNode* tree, std::string nodeId, bool& treeLoaded) {
@@ -438,5 +440,6 @@ void ConsoleInterface::xpath(XMLNode* tree, std::string xPathString, bool& treeL
     }
 
     XPathParser parser = XPathParser(tree, xPathString);
-    parser.execute();
+    std::string resultString = parser.execute();
+    std::cout << resultString << std::endl;
 }

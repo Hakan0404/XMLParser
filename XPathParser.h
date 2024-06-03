@@ -48,5 +48,5 @@ class XPathParser {
 
 
     public:
-        void execute();
+        std::string execute();
 };

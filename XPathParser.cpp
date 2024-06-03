@@ -403,30 +403,36 @@ childCommand(_childCommand), nameCommand(_nameCommand), predicateCommand(_predic
 
 }
 
-void XPathParser::execute() {
+std::string XPathParser::execute() {
+    std::string resultString;
+
     for (int i = 0; i < commands.size(); i++) {
         currentlySelectedNodes = selectionCommand(currentlySelectedNodes, commands[i]);
     }
 
     // prints from the first to the second to last element
-    std::cout << "{";
+    resultString += "{";
     for (int i = 0; i < (int)(currentlySelectedNodes.size()) - 1; i++) {
         if (currentlySelectedNodes[i]->getNodeType() == "AttributeNode") {
             AttributeNode* currentNode = dynamic_cast<AttributeNode*>(currentlySelectedNodes[i]);
-            std::cout << currentNode->getKey() << "=\"" << currentNode->getValue() << "\", ";
+            resultString += currentNode->getKey(); 
+            resultString += "=\"";
+            resultString += currentNode->getValue();
+            resultString += "\", ";
         }
         else if (currentlySelectedNodes[i]->getNodeType() == "XMLNode") {
             XMLNode* currentNode = dynamic_cast<XMLNode*>(currentlySelectedNodes[i]);
             std::vector<StringNode*> stringChildren = currentNode->getStringChildren();
 
 
-            std::cout << "{";
+            resultString += "{";
             for (int j = 0; j < (int)(stringChildren.size()) - 1; j++) {
-                std::cout << stringChildren[j]->getText() << ", ";
+                resultString += stringChildren[j]->getText();
+                resultString += ", ";
             }
 
-            if (stringChildren.size() > 0) std::cout << stringChildren[(int)(stringChildren.size()) - 1]->getText();
-            std::cout << "}, ";
+            if (stringChildren.size() > 0) resultString += stringChildren[(int)(stringChildren.size()) - 1]->getText();
+            resultString += "}, ";
         }
         else throw std::logic_error("Invalid nodes selected. Only AttributeNode and XMLNode objects may be part of the final selection."); 
     }
@@ -435,27 +441,33 @@ void XPathParser::execute() {
     if (currentlySelectedNodes.size() > 0) {
         if (currentlySelectedNodes[(int)(currentlySelectedNodes.size()) - 1]->getNodeType() == "AttributeNode") {
             AttributeNode* currentNode = dynamic_cast<AttributeNode*>(currentlySelectedNodes[(int)(currentlySelectedNodes.size()) - 1]);
-            std::cout << currentNode->getKey() << "=\"" << currentNode->getValue() << "\"";
+            resultString += currentNode->getKey();
+            resultString += "=\"";
+            resultString += currentNode->getValue();
+            resultString += "\"";
         }
         else if (currentlySelectedNodes[(int)(currentlySelectedNodes.size()) - 1]->getNodeType() == "XMLNode"){
             XMLNode* currentNode = dynamic_cast<XMLNode*>(currentlySelectedNodes[(int)(currentlySelectedNodes.size()) - 1]);
             std::vector<StringNode*> stringChildren = currentNode->getStringChildren();
 
-            std::cout << "{";
+            resultString += "{";
             for (int j = 0; j < (int)(stringChildren.size()) - 1; j++) {
-                std::cout << stringChildren[j]->getText() << ", ";
+                resultString += stringChildren[j]->getText();
+                resultString += ", ";
             }
-            if (stringChildren.size() > 0) std::cout << stringChildren[stringChildren.size() - 1]->getText();
-            std::cout << "}";
+            if (stringChildren.size() > 0) resultString += stringChildren[stringChildren.size() - 1]->getText();
+            resultString += "}";
         }
         else throw std::logic_error("Invalid nodes selected. Only AttributeNode and XMLNode objects may be part of the final selection."); 
     }
     
-    std::cout << "}\n";
+    resultString += "}";
 
     // resets the context, allowing for repeated execution
     currentlySelectedNodes.clear();
     currentlySelectedNodes.push_back(xmlTree);
 
     //std::cout << "End of execute() reached.\n";
+
+    return resultString;
 }
