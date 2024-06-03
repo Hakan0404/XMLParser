@@ -6,3 +6,5 @@
 TreeNode::TreeNode(TreeNode* _parent): parent(_parent) {
 
 }
+
+TreeNode::~TreeNode() {}

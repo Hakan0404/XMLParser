@@ -19,5 +19,7 @@ class AttributeNode: public TreeNode {
         void setValue(std::string);
 
         void testPrint(int = 0) const;
+        void toString(std::string&, int = 0) const;
+
         std::string getNodeType() const;
 };

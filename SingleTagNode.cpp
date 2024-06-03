@@ -9,6 +9,13 @@ void SingleTagNode::testPrint(int indentationLevel) const {
     std::cout << "<" << name << "/>" << std::endl;
 }
 
+void SingleTagNode::toString(std::string& outputString, int indentationLevel) const {
+    for (int i = 0; i < indentationLevel; i++) outputString += '\t';
+    outputString += '<';
+    outputString += name;
+    outputString += "/>";
+}
+
 std::string SingleTagNode::getNodeType() const {
     return "SingleTagNode";
 }

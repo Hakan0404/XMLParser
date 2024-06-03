@@ -20,6 +20,10 @@ void AttributeNode::testPrint(int redundant) const {
     std::cout << key << "=\"" << value << "\""; 
 }
 
+void AttributeNode::toString(std::string& outputString, int redundant) const {
+    throw std::logic_error("Something went wrong. toString() of AttributeNode shouldn't be called.");
+}
+
 std::string AttributeNode::getNodeType() const {
     return "AttributeNode";
 }

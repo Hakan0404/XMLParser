@@ -10,13 +10,6 @@
 
 class XMLNode: public TreeNode {
     private:
-        /*struct XMLAttribute {
-            std::string key;
-            std::string value;
-            
-            XMLAttribute(std::string, std::string);
-        };*/
-
         std::string name;
         std::vector<TreeNode*> children;
         std::vector<AttributeNode*> attributes;
@@ -39,6 +32,7 @@ class XMLNode: public TreeNode {
         void setAttribute(int, std::string);
         AttributeNode* getAttribute(std::string) const;
         AttributeNode* getAttribute(int) const;
+        void removeAttribute(std::string);
         std::vector<AttributeNode*> getAllAttributes();
 
         bool hasAttribute(std::string) const;
@@ -48,6 +42,7 @@ class XMLNode: public TreeNode {
 
         // temporary function for testing; to remove later
         void testPrint(int = 0) const;
+        void toString(std::string&, int = 0) const;
 
         // UNSAFE; remove later
         std::vector<TreeNode*> getChildren() const;
@@ -61,4 +56,6 @@ class XMLNode: public TreeNode {
         static XMLNode* constructTree(const std::string&);
 
         std::string getNodeType() const;
+
+        ~XMLNode();
 };

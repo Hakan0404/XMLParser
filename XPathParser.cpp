@@ -6,11 +6,11 @@
 #include <algorithm>
 
 XPathParser::XPathParser(XMLNode* _xmlTree, std::string expressionString) {
-    xmlTree = _xmlTree; // TO REPLACE with xmlTree = _xmlTree->clone();
+    xmlTree = _xmlTree;
     
     if ((expressionString[0] >= 'a' && expressionString[0] <= 'z') ||
         (expressionString[0] >= 'A' && expressionString[0] <= 'Z') ||
-        (expressionString[0] == '@')) {
+        (expressionString[0] == '@' || expressionString[0] == '*')) {
         expressionString = "//" + expressionString;
     }
 
@@ -51,7 +51,7 @@ XPathParser::XPathParser(XMLNode* _xmlTree, std::string expressionString) {
 
         // Debugging
         //std::cout << "Commands:\n";
-        std::cout << childCommand << nameCommand << "[" << predicateCommand << "]" << std::endl;
+        //std::cout << childCommand << nameCommand << "[" << predicateCommand << "]" << std::endl;
 
         stringCommands.push_back(CommandTriplet(childCommand, nameCommand, predicateCommand));
 
@@ -457,5 +457,5 @@ void XPathParser::execute() {
     currentlySelectedNodes.clear();
     currentlySelectedNodes.push_back(xmlTree);
 
-    std::cout << "End of execute() reached.\n";
+    //std::cout << "End of execute() reached.\n";
 }

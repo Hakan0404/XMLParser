@@ -151,6 +151,21 @@ AttributeNode* XMLNode::getAttribute(int attributeIndex) const {
 }
 
 
+void XMLNode::removeAttribute(std::string attributeKey) {
+    if (!(this->hasAttribute(attributeKey))) {
+        std::string errorMessage = "No attribute with key " + attributeKey + " found. Could not delete.";
+        throw std::invalid_argument(errorMessage);
+    }
+    
+    for (int i = 0; i < attributes.size(); i++) {
+        if (attributes[i]->getKey() == attributeKey) {
+            delete attributes[i];
+            attributes.erase(attributes.begin() + i);
+        }
+    }
+}
+
+
 std::vector<AttributeNode*> XMLNode::getAllAttributes() {
     return attributes;
 }
@@ -180,11 +195,11 @@ std::string XMLNode::getName() const {
 
 
 void XMLNode::testPrint(int indentationLevel) const {
-    for (int i = 0; i < indentationLevel; i++) std::cout << '\t'; //prints indentiation before opening tag
+    for (int i = 0; i < indentationLevel; i++) std::cout << '\t'; // prints indentiation before opening tag
     
     // prints name
     std::cout << '<' << name;
-    //prints attributes
+    // prints attributes
     for (int i = 0; i < attributes.size(); i++) {
         std::cout << ' ' << attributes[i]->getKey() << "=\"" << attributes[i]->getValue() << '\"';
     }
@@ -200,6 +215,40 @@ void XMLNode::testPrint(int indentationLevel) const {
     std::cout << "</" << name << ">\n";
 }
 
+
+void XMLNode::toString(std::string& outputString, int indentationLevel) const {
+    for (int i = 0; i < indentationLevel; i++) outputString.push_back('\t'); // adds indentiation before opening tag
+    
+    //std::cout << "toString() called for " << name << std::endl;
+
+    // adds the name and start of opening tag
+    outputString += '<';
+    outputString += name;
+
+    // adds the attributes
+    for (int i = 0; i < attributes.size(); i++) {
+        outputString += ' ';
+        outputString += attributes[i]->getKey();
+        outputString += "=\"";
+        outputString += attributes[i]->getValue();
+        outputString += '\"';
+    }
+    outputString += ">\n"; // adds end of opening tag
+
+    // recursive for the children
+    for (int i = 0; i < (int)children.size(); i++) {
+        children[i]->toString(outputString, indentationLevel + 1);
+        outputString += "\n";
+    }
+    //if (children.size() > 0) children[(int)children.size() - 1]->toString(outputString, indentationLevel + 1);
+
+
+    for (int i = 0; i < indentationLevel; i++) outputString += '\t'; //prints indentiation before closing tag
+    // adds the closing tag
+    outputString += "</";
+    outputString += name;
+    outputString += ">";
+}
 
 std::vector<TreeNode*> XMLNode::getChildren() const {
     return children;
@@ -325,11 +374,25 @@ XMLNode* XMLNode::constructTree(const std::string& filePath) {
     XMLNode* root = constructNode(nullptr, fileString, fileStringIndex);
     delete fileStringIndex;
 
+    //std::cout << "Tree constructed\n"; 
+
     root->setUniqueIds();
+
+    //std::cout << "Ids set\n";
     
     return root;
 }
 
 std::string XMLNode::getNodeType() const {
     return "XMLNode";
+}
+
+XMLNode::~XMLNode() {
+    for (int i = 0; i < attributes.size(); i++) {
+        delete attributes[i];
+    }
+
+    for (int i = 0; i < children.size(); i++) {
+        delete children[i];
+    }
 }

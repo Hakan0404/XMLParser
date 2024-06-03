@@ -14,6 +14,11 @@ void StringNode::testPrint(int indentationLevel) const {
     std::cout << text << std::endl;
 }
 
+void StringNode::toString(std::string& outputString, int indentationLevel) const {
+    for (int i = 0; i < indentationLevel; i++) outputString.push_back('\t');
+    outputString += text;
+}
+
 std::string StringNode::getNodeType() const {
     return "StringNode";
 }

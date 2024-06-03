@@ -1,9 +1,14 @@
 #include "XMLNode.h"
 #include "StringNode.h"
 #include "XPathParser.h"
+#include "ConsoleInterface.h"
+
 #include <iostream>
 #include <fstream>
 #include <algorithm>
+
+//#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+//#include "doctest.h"
 
 
 int main() {
@@ -28,15 +33,24 @@ int main() {
     //emptyString.clear();
     //std::cout << emptyString.empty() << std::endl;
 
-    XMLNode* tree = XMLNode::constructTree("testxml.txt");
-    std::cout << "Printing of constructed tree:" << std::endl;
-    tree->testPrint(0);
-    std::cout << "\n\n";
 
+
+
+    /*XMLNode* tree = XMLNode::constructTree("testxml.txt");
+    std::cout << "Printing of constructed tree:" << std::endl;
+    std::string printString;
+    tree->toString(printString, 0);
+    std::cout << printString;
+    std::cout << "\n\n";*/
+
+
+
+    /*
     std::string xPathExpression;
     std::getline(std::cin, xPathExpression);
     XPathParser testParser = XPathParser(tree, xPathExpression);
     testParser.execute();
+    */
 
     //std::string containString = "lol bro";
     //containString.erase(0, 2);
@@ -60,7 +74,20 @@ int main() {
     std::cout << std::endl;*/
     //std::cout << "Vector find: " << (std::find(intVector.begin(), intVector.end(), 3) != intVector.end()) << std::endl;
 
-    std::string endString = "End of main reached";
+
+    XMLNode* xmlTree = nullptr;
+    bool treeLoaded = false;
+    std::string currentFilePath;
+    bool wantsToExit = false;
+
+    std::cout << "Start entering commands (type \"help\" for a list of commands):\n";
+    while (!wantsToExit) {
+        std::string currentCommand;
+        std::getline(std::cin, currentCommand);
+        ConsoleInterface::parseCommand(xmlTree, treeLoaded, currentCommand, wantsToExit, currentFilePath);
+    }
+
+    std::string endString = "Program terminated";
     std::cout << endString << std::endl;
     //std::cout << endString.substr(0, endString.length() - 1);
     return 0;
